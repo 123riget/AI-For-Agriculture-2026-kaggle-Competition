@@ -90,5 +90,5 @@ While the final leaderboard ranking shifted, the statistical rigor, the identifi
 
 * `notebooks\` - Containes the end-to-end training loops, custome Dataset classes, ensemble generation, and statistical evaluation script.
 * `ae_checkpoints\` - AutoEncoder model used as an anamoly detector for a particular disease.
-* `Embeddings_supervised_data\` - 712D Embeddings extracted from Prithvi for all the images.
+* `Embeddings_supervised_data\` - 768D Embeddings extracted from Prithvi for all the images.
 * `Submissions` - The list of submission file submitted for evaluation.
