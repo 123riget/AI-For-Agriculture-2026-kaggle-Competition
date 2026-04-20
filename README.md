@@ -44,4 +44,42 @@ We injected native PyTorch **backward hooks** into the final normalization layer
 **The Result:** The Grad-CAM audit proved our architecture was biologically grounded. The mathematical gradients (deep red hot spots ) clamped perfectly onto the actual brown lesions and necrotic patches , completely ignoring the pitch-black background and healthy green. The Deep learning model had successfully learned Crop pathology.
 
 ---
+### Phase 4 : Statistical Ablation Study 
 
+Accuracy and F1-Scores are highly deceptive on datasets where one class only has 15 images. To truly validate the 60/40 ensemble, we employed strict statistical evaluation parameteres-specifically looking at the **Matthews Correlation Coefficient (MCC)** and **Log Loss**.
+
+We conducted an **Ablation Study** to measure the exact value of the XGBoost embedding injection against the standalone ConvNext Models:
+
+| Metric | 60 / 40 Ensemble (CNN + XGB) | Pure ConvNext (Visual Only) | Winner |
+| :--- | :--- | :--- | :--- |
+| **Matthews Correlation Coefficient (MCC)** | 0.8262 | **0.8458** | *ConvNext*|
+| **Cohen's Kappa** | 0.8196 | **0.8420** | *ConvNext* | 
+| **Log Loss (Cross-Entropy)** | 0.3484 | **0.3393** | *ConvNext* |
+
+**The Epiphay:** The math was undeniable. XGBoost was actively dragging the Deep Learning model down. Because the 768D embeddings couldn't "see" the tiny lesions, XGBoost was essentially making blind guesses and diluting ConvNext's mathematically perfect visual predictions.
+
+**The Pivot:** We dropped the tabular embeddings entirely. The final Kaggle submission was a **100% Pure ConvNext-Tiny architecture** utilizing Test-Time Augmentation (TTA) (horizontal and vertical geometric flips). 
+
+--- 
+
+### Phase 5 : The "Private LeaderBoard Reality
+
+Despite exceptional local validation metrics (MCC > 0.84) and a visually validated biological architecture, the model suffered from the infamous **Kaggle Private Leaderboard Shakeup**.
+
+Post-mortem error analysis of the evaluation data revealed a massive, hidden **domain shift** in the unseen 60% of the private test set. 
+* **Resolution Traps:** We discovered evaluation images with native `264x264` resolutions, differing from the strict `224x224` training crops, altering the spatial frequency of the lesions.
+* **Spectral/Altitude Variance:** Multispectral TIFFs are highly sensitive to sunlight and altitude at the exact moment of their capture. The private set likely contained atmospheric or lighting conditions not reperesented in our training distribution.
+
+While the final leaderboard ranking shifted, the statistical rigor, the identification of the Prithvi embedding flaw, and the robust computer vision pipeline here remain highly valuable temple for future precision agriculture challenges.
+
+**Kaggle Public LeaderBoard Rank: 2** 
+**Kaggle Private LeaderBoard Rank: 17**
+
+---
+
+### Repository Sturcture 
+
+* `notebooks\' - Containes the end-to-end training loops, custome Dataset classes, ensemble generation, and statistical evaluation script.
+* `ae_checkpoints\` - AutoEncoder model used as an anamoly detector for a particular disease.
+*  
+* 
