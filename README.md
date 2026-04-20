@@ -29,7 +29,7 @@ The primary challenge of this competition was extreme data skew and complex form
 ### Phase 2 : The Hybrid Architecture (CNN + XGBoost)
 
 Realizing we needed local spatial geometry, we pivoted to a hybrid ensemble approach:
-* **Visula Geometry(Deep Learning):** A **ConvNext-Tiny** architecture trained from scratch on the multispectral bands (B4, B3, B2) to learn the physical shape of the diseases.
+* **Visual Geometry(Deep Learning):** A **ConvNext-Tiny** architecture trained from scratch on the multispectral bands (B4, B3, B2) to learn the physical shape of the diseases.
 * **Chemical Signatures (Tabular):** An **XGBoost** model trained on the 768D embeddings to act as a global tabular tie-breaker.
 
 Through extensive grid-search optimization we found that a mathematically weighted blend--**60% ConvNext and 40 % XGBoost**--yielded an exceptional local Validation accuracy of over 90%.
@@ -42,6 +42,10 @@ Before trusting the model, we had to ensure the ConvNext  architecture wasn't "s
 We injected native PyTorch **backward hooks** into the final normalization layer of the ConvNext network to generate **Grad-CAM heatmaps**.
 
 **The Result:** The Grad-CAM audit proved our architecture was biologically grounded. The mathematical gradients (deep red hot spots ) clamped perfectly onto the actual brown lesions and necrotic patches , completely ignoring the pitch-black background and healthy green. The Deep learning model had successfully learned Crop pathology.
+ <figure>
+  <img src="output4.png" alt="Grad-CAM heatmaps">
+  <figcaption align="center">Figure 1: Grad-CAM heatmap for ConvNext Model</figcaption>
+</figure>
 
 ---
 ### Phase 4 : Statistical Ablation Study 
@@ -56,7 +60,7 @@ We conducted an **Ablation Study** to measure the exact value of the XGBoost emb
 | **Cohen's Kappa** | 0.8196 | **0.8420** | *ConvNext* | 
 | **Log Loss (Cross-Entropy)** | 0.3484 | **0.3393** | *ConvNext* |
 
-**The Epiphay:** The math was undeniable. XGBoost was actively dragging the Deep Learning model down. Because the 768D embeddings couldn't "see" the tiny lesions, XGBoost was essentially making blind guesses and diluting ConvNext's mathematically perfect visual predictions.
+**The Epiphany:** The math was undeniable. XGBoost was actively dragging the Deep Learning model down. Because the 768D embeddings couldn't "see" the tiny lesions, XGBoost was essentially making blind guesses and diluting ConvNext's mathematically perfect visual predictions.
 
 **The Pivot:** We dropped the tabular embeddings entirely. The final Kaggle submission was a **100% Pure ConvNext-Tiny architecture** utilizing Test-Time Augmentation (TTA) (horizontal and vertical geometric flips). 
 
@@ -75,11 +79,16 @@ While the final leaderboard ranking shifted, the statistical rigor, the identifi
 **Kaggle Public LeaderBoard Rank: 2** 
 **Kaggle Private LeaderBoard Rank: 17**
 
+ <figure>
+  <img src="output7.png" alt="Submitted Prediction">
+  <figcaption align="center">Figure 1: Submitted Prediction for ConvNext Model</figcaption>
+</figure>
+
 ---
 
 ### Repository Sturcture 
 
-* `notebooks\' - Containes the end-to-end training loops, custome Dataset classes, ensemble generation, and statistical evaluation script.
+* `notebooks\` - Containes the end-to-end training loops, custome Dataset classes, ensemble generation, and statistical evaluation script.
 * `ae_checkpoints\` - AutoEncoder model used as an anamoly detector for a particular disease.
-*  
-* 
+* `Embeddings_supervised_data\` - 712D Embeddings extracted from Prithvi for all the images.
+* `Submissions` - The list of submission file submitted for evaluation.
